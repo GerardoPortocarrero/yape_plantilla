@@ -1,0 +1,4 @@
+[*] Dataframes generados
+[*] Dataframes concatenados
+[*] Dataframe total procesado
+[*] Dataframe total cargado en excel
