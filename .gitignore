@@ -195,3 +195,4 @@ cython_debug/
 *.xlsx
 *.jpg
 *.bat
+main.py

@@ -19,7 +19,8 @@ def main(
         MAIL_CC,
         PROCESSED_FILE,
         SUBJECT,
-        FIRM_PATH  # Ruta completa: 'C:/Ruta/firma.png'
+        FIRM_PATH,  # Ruta completa: 'C:/Ruta/firma.png'
+        TODAY
 ):
     # Crear instancia de Outlook
     outlook = win32com.client.Dispatch(OUTLOOK + DOT + APPLICATION)
@@ -33,7 +34,7 @@ def main(
     <html>
     <body style="font-family: Arial, sans-serif;">
         <p>Estimados,</p>
-        <p>Adjunto planificación de yape 25-06-2025.</p>
+        <p>Adjunto planificación de yape {TODAY}.</p>
         <p>Saludos,</p>
         <br>
         <img src="cid:{cid}" width="350"><br>
