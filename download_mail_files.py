@@ -55,7 +55,7 @@ def get_outlook_files(
                     file_name = attachment.FileName
                     file_address = os.path.join(PROJECT_ADDRESS, attachment.FileName)
                     files_found[locacion['name']] = [file_name, file_address, mail_received_time]
-                    #attachment.SaveAsFile(file_address)
+                    attachment.SaveAsFile(file_address)
 
             # Si el email del emisor (remitente) no se reconoce -> SALTAR
                 # if locacion['sender_email'].lower() == email_lower:
