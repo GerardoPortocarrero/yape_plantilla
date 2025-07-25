@@ -32,6 +32,7 @@ def get_outlook_files(
             continue
 
         email_lower = mail.SenderEmailAddress.lower()
+        subject_lower = mail.Subject.lower()
         mail_received_time = mail.ReceivedTime.strftime("%Y-%m-%d")
 
         # Buscar attachments
@@ -40,14 +41,30 @@ def get_outlook_files(
             if not attachment.FileName.endswith((".xlsx", ".xls")):
                 continue
             
-            # Si el email del emisor (remitente) no se reconoce -> SALTAR
+            # Si el asunto del emisor (remitente) coincide con las keywords
             for locacion in LOCACIONES:
-                if locacion['sender_email'].lower() == email_lower:
+                matches = 0
+                subject_keywords = len(locacion['mail_subject'])
+
+                for element in locacion['mail_subject']:
+                    if element in subject_lower:
+                        matches += 1
+                
+                if matches == subject_keywords:
+                    print(locacion['name'], email_lower, mail_received_time)
                     file_name = attachment.FileName
                     file_address = os.path.join(PROJECT_ADDRESS, attachment.FileName)
                     files_found[locacion['name']] = [file_name, file_address, mail_received_time]
-                    attachment.SaveAsFile(file_address)
+                    #attachment.SaveAsFile(file_address)
 
+            # Si el email del emisor (remitente) no se reconoce -> SALTAR
+                # if locacion['sender_email'].lower() == email_lower:
+                #     file_name = attachment.FileName
+                #     file_address = os.path.join(PROJECT_ADDRESS, attachment.FileName)
+                #     files_found[locacion['name']] = [file_name, file_address, mail_received_time]
+                #     attachment.SaveAsFile(file_address)
+
+            print(f'Files found: {files_found}\n')
             if len(files_found) == 4:
                 return files_found
                                         
