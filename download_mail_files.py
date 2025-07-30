@@ -51,7 +51,6 @@ def get_outlook_files(
                         matches += 1
                 
                 if matches == subject_keywords:
-                    print(locacion['name'], email_lower, mail_received_time)
                     file_name = attachment.FileName
                     file_address = os.path.join(PROJECT_ADDRESS, attachment.FileName)
                     files_found[locacion['name']] = [file_name, file_address, mail_received_time]
@@ -64,7 +63,6 @@ def get_outlook_files(
                 #     files_found[locacion['name']] = [file_name, file_address, mail_received_time]
                 #     attachment.SaveAsFile(file_address)
 
-            print(f'Files found: {files_found}\n')
             if len(files_found) == 4:
                 return files_found
                                         
