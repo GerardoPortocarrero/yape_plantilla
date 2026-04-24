@@ -4,41 +4,46 @@ import log_management as log
 
 def clean_df(df_total, INVALID_CDTRA):
     # Filtramos las filas donde la columna 1 no tenga valores inválidos
+    # Usamos loc para asegurar que la operación sea explícita
     return df_total[~df_total[1].astype(str).str.strip().isin(INVALID_CDTRA)]
 
 def main(
         PROJECT_ADDRESS,
-        CAMANA, 
-        PEDREGAL, 
-        CHALA, 
-        ATICO,
-        df_cam, 
-        df_ped, 
-        df_cha, 
-        df_ati,
+        LOCATIONS,      # Lista de diccionarios/objetos con la clave "name"
+        df_loc,         # Lista de DataFrames en el mismo orden que LOCATIONS
         INVALID_CDTRA
 ):
-    sede_dataframes = [
-        (CAMANA["name"], df_cam),
-        (PEDREGAL["name"], df_ped),
-        (CHALA["name"], df_cha),
-        (ATICO["name"], df_ati),
-    ]
+    # Validamos que ambas listas tengan la misma longitud para evitar errores de índice
+    if len(LOCATIONS) != len(df_loc):
+        log.write_log(PROJECT_ADDRESS, '[!] Error: La cantidad de locaciones no coincide con los dataframes')
+        return pd.DataFrame()
 
-    df_total = pd.DataFrame()
+    df_total_list = [] # Usar una lista para colectar dfs es más eficiente que concat en bucle
 
-    # Juntar todas las sedes
-    for name, df in sede_dataframes:
+    # Iteramos en paralelo usando zip
+    for location, df in zip(LOCATIONS, df_loc):
         if df is None or df.empty:
             continue
-        df = df.copy()
-        df.insert(0, "SEDE", name)  # Insertar como primera columna
-        df.columns = range(df.shape[1])  # Ignorar nombres originales de columnas
-        df_total = pd.concat([df_total, df], ignore_index=True)
-    log.write_log(PROJECT_ADDRESS, '[*] Dataframes concatenados')
+            
+        df_temp = df.copy()
+        # Insertar nombre de la sede como primera columna
+        df_temp.insert(0, "SEDE", location["name"])  
+        
+        # Estandarizar nombres de columnas a índices numéricos para evitar conflictos al concatenar
+        df_temp.columns = range(df_temp.shape[1])
+        
+        df_total_list.append(df_temp)
 
-    df_total = clean_df(df_total, INVALID_CDTRA)
-
-    log.write_log(PROJECT_ADDRESS, '[*] Dataframe total procesado')
-
-    return df_total
+    # Concatenamos todo al final (es más rápido que hacerlo dentro del for)
+    if df_total_list:
+        df_total = pd.concat(df_total_list, ignore_index=True)
+        log.write_log(PROJECT_ADDRESS, '[*] Dataframes concatenados')
+        
+        # Limpieza de datos
+        df_total = clean_df(df_total, INVALID_CDTRA)
+        log.write_log(PROJECT_ADDRESS, '[*] Dataframe total procesado')
+        
+        return df_total
+    else:
+        log.write_log(PROJECT_ADDRESS, '[!] Advertencia: No se procesaron datos (Dataframes vacíos)')
+        return pd.DataFrame()

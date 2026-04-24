@@ -31,7 +31,6 @@ def get_outlook_files(
         if mail.Class != MAIL_ITEM or mail.Attachments.Count == 0:
             continue
 
-        email_lower = mail.SenderEmailAddress.lower()
         subject_lower = mail.Subject.lower()
         mail_received_time = mail.ReceivedTime.strftime("%Y-%m-%d")
 
@@ -56,14 +55,7 @@ def get_outlook_files(
                     files_found[locacion['name']] = [file_name, file_address, mail_received_time]
                     attachment.SaveAsFile(file_address)
 
-            # Si el email del emisor (remitente) no se reconoce -> SALTAR
-                # if locacion['sender_email'].lower() == email_lower:
-                #     file_name = attachment.FileName
-                #     file_address = os.path.join(PROJECT_ADDRESS, attachment.FileName)
-                #     files_found[locacion['name']] = [file_name, file_address, mail_received_time]
-                #     attachment.SaveAsFile(file_address)
-
-            if len(files_found) == 4:
+            if len(files_found) == len(LOCACIONES):
                 return files_found
                                         
 
