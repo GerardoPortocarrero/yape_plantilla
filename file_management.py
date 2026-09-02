@@ -46,7 +46,7 @@ def enlace_management(df_raw, LOCATION):
 
 def basis_management(df_raw, LOCATION):
     # Se asume que este archivo ya viene con las columnas separadas
-    df = filter_noise(df_raw, 2)
+    df = filter_noise(df_raw, 0)
     df = get_relevant_columns(df, LOCATION)
     
     # Limpieza estándar
